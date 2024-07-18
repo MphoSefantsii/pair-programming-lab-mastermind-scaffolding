@@ -3,35 +3,46 @@
  * @function checkGuess
  * Checks guess for "mastermind" game against solution
  *
- * @param {string} guess - the solution to the
+ * @param {string} guess - the solution to the guess
  * @param {string} solution - the target for the guess
  *
- * @returns {string} - an string representing the number of correct numbers
+ * @returns {string} - a string representing the number of correct numbers
  *                     in the correct position and the number of correct
  *                     numbers in the incorrect position for the guess
  *
  * @example
- * checkGuess('1532, '1234')
+ * checkGuess('1532', '1234')
  * // returns '2-1'
  * // two numbers in the correct place (1 and 3)
  * // and one correct number in the incorrect place (2)
  *
  */
 function checkGuess(guess, solution) {
-  // TODO: complete this function
-  // first determine how many characters total the two strings have in common
-  // This may help:
-  // https://github.com/bonnie/udemy-ENZYME/blob/master/context-base/src/helpers/index.js
-  //
-  // then determine how many of those characters are in the right place
-  // hint: iterate through characters of guess and compare to character
-  // in the same position in solution
-  //
-  // finally, return a string in the format
-  // "count of correct characters in the right place"-"count of correct
-  // characters not in the right place"
-  // for example, "2-1"
-  //
+  let correctPosition = 0;
+  let correctDigitWrongPosition = 0;
+
+  const secretCount = {};
+  const guessCount = {};
+
+  // First pass: Count correct positions
+  for (let i = 0; i < solution.length; i++) {
+    if (solution[i] === guess[i]) {
+      correctPosition++;
+    } else {
+      // Count digits for later use
+      secretCount[solution[i]] = (secretCount[solution[i]] || 0) + 1;
+      guessCount[guess[i]] = (guessCount[guess[i]] || 0) + 1;
+    }
+  }
+
+  // Second pass: Count correct digits in wrong positions
+  for (const digit in guessCount) {
+    if (secretCount[digit]) {
+      correctDigitWrongPosition += Math.min(secretCount[digit], guessCount[digit]);
+    }
+  }
+
+  return `${correctPosition}-${correctDigitWrongPosition}`;
 }
 
 // https://jsdoc.app
@@ -58,7 +69,6 @@ function processInput(solution, guesses) {
 
 // ----------- main program ------- //
 // process arguments via destructuring
-//
 const [solution, guessCount, ...guesses] = process.argv.slice(2);
 
 // (lightly) verify the input
